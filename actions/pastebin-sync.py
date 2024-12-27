@@ -1,84 +1,78 @@
-import os
-import sys
 import requests
-import re
 
-PASTEBIN_API_URL = "https://pastebin.com/api/api_post.php"
+def delete_paste(api_key, paste_id):
+    """Deletes an existing paste."""
+    url = "https://pastebin.com/api/api_post.php"
+    data = {
+        "api_dev_key": api_key,
+        "api_paste_key": paste_id,
+        "api_option": "delete",
+    }
 
-def extract_paste_id_from_readme(readme_path):
-    """Extract the existing Paste ID from the README.md file."""
-    with open(readme_path, 'r') as file:
-        content = file.read()
-    
-    match = re.search(r'pastebin run (\w+)', content)
-    if match:
-        return match.group(1)
+    response = requests.post(url, data=data)
+
+    if response.status_code == 200 and response.text.strip() == "Paste Removed":
+        print("Successfully deleted the existing paste.")
     else:
-        return None
+        raise Exception(f"Failed to delete paste: {response.text}")
 
-def upload_or_update_pastebin(api_key, file_path, paste_id=None):
-    """Upload a new paste or update an existing paste on Pastebin."""
+def create_paste(api_key, file_path):
+    """Creates a new paste and returns the paste ID."""
     with open(file_path, 'r') as file:
         content = file.read()
-    
+
+    url = "https://pastebin.com/api/api_post.php"
     data = {
-        'api_dev_key': api_key,
-        'api_paste_code': content,
+        "api_dev_key": api_key,
+        "api_paste_code": content,
+        "api_option": "paste",
+        "api_paste_name": "Installer Script",  # Optional: Name for the paste
+        "api_paste_expire_date": "N",         # Optional: Expiry date
     }
-    
-    # Use 'edit' option if updating an existing paste
-    if paste_id:
-        data['api_option'] = 'edit'
-        data['api_paste_key'] = paste_id
-    else:
-        data['api_option'] = 'paste'
-    
-    response = requests.post(PASTEBIN_API_URL, data=data)
-    
-    if response.status_code == 200:
-        if paste_id:
-            print(f"Successfully updated paste: {paste_id}")
-            return paste_id
-        else:
-            new_paste_id = response.text.split('/')[-1]
-            print(f"Successfully created new paste: {new_paste_id}")
-            return new_paste_id
-    else:
-        raise Exception(f"Failed to upload/update paste: {response.text}")
 
-def update_readme_with_paste_id(readme_path, paste_id):
-    """Update the README.md with the new Paste ID."""
-    with open(readme_path, 'r') as file:
-        content = file.read()
-    
-    # Replace the Paste ID in the "install:" line
-    updated_content = re.sub(
-        r'(pastebin run )\w+',
-        rf'\1{paste_id}',
-        content
-    )
-    
-    with open(readme_path, 'w') as file:
-        file.write(updated_content)
+    response = requests.post(url, data=data)
 
+    if response.status_code == 200 and not response.text.startswith("Bad API request"):
+        return response.text.strip().split("/")[-1]  # Extract the paste ID
+    else:
+        raise Exception(f"Failed to create paste: {response.text}")
+
+def upload_or_update_pastebin(api_key, file_path, existing_paste_id=None):
+    """Deletes the old paste if it exists and creates a new one."""
+    if existing_paste_id:
+        delete_paste(api_key, existing_paste_id)  # Delete the existing paste
+
+    new_paste_id = create_paste(api_key, file_path)  # Create a new paste
+    return new_paste_id
+
+# Example usage
 if __name__ == "__main__":
-    api_key = os.getenv("PASTEBIN_API_KEY")
-    if not api_key:
-        print("PASTEBIN_API_KEY not set in environment variables.")
+    import sys
+
+    if len(sys.argv) < 3:
+        print("Usage: python pastebin-sync.py <file_to_upload> <readme_file>")
         sys.exit(1)
 
+    api_key = "your_api_key_here"  # Replace with your Pastebin API key
     file_to_upload = sys.argv[1]
-    readme_path = sys.argv[2]
+    readme_file = sys.argv[2]
 
-    # Extract the existing Paste ID from the README.md
-    existing_paste_id = extract_paste_id_from_readme(readme_path)
-    if existing_paste_id:
-        print(f"Found existing Paste ID in README: {existing_paste_id}")
-    else:
-        print("No existing Paste ID found in README. A new paste will be created.")
+    # Extract existing paste ID from README
+    with open(readme_file, 'r') as readme:
+        content = readme.read()
+    existing_paste_id = None
+    if "pastebin run " in content:
+        existing_paste_id = content.split("pastebin run ")[1].split('"')[0]
 
-    # Upload or update the paste on Pastebin
-    updated_paste_id = upload_or_update_pastebin(api_key, file_to_upload, existing_paste_id)
+    try:
+        # Upload or update the paste
+        updated_paste_id = upload_or_update_pastebin(api_key, file_to_upload, existing_paste_id)
 
-    # Update the README.md with the new Paste ID
-    update_readme_with_paste_id(readme_path, updated_paste_id)
+        # Update README with new Paste ID
+        updated_content = content.replace(existing_paste_id, updated_paste_id) if existing_paste_id else content
+        with open(readme_file, 'w') as readme:
+            readme.write(updated_content)
+        print(f"Updated README with new Paste ID: {updated_paste_id}")
+
+    except Exception as e:
+        print(str(e))
