@@ -1,5 +1,5 @@
 -- addressManager.lua
-
+local config = require("autoDialer.config")
 local addresses = {}
 
 -- Load addresses from file
