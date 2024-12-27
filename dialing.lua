@@ -2,6 +2,20 @@
 local addressManager = require("autoDialer.addressManager")
 local config = require("autoDialer.config")
 
+local function dialermode(address)
+    while true do
+    print("Choose dialing mode: (1) Fast, (2) Slow")
+    local mode = read()
+    if mode == "1" then
+        fastDialStargate(address)
+    elseif mode == "2" then
+        slowDialStargate(address)
+    else
+        print("Invalid option, please try again.")
+    end
+end
+end
+
 local function dialermenu()
     while true do
         term.clear()
@@ -15,7 +29,7 @@ local function dialermenu()
             print("Enter the alias of the address you want to dial:")
             local alias = read()
             local address = addressManager.getAddress(alias)
-            fastDialStargate(address)
+            dialermode(address)
         elseif choice == "2" then
             if config.isMilkyWay then
                 print("Enter Stargate address to dial (separated by dashes, e.g., 1-2-3):")
@@ -31,7 +45,7 @@ local function dialermenu()
                 while #address < 9 do
                     table.insert(address, 0)
                 end
-                fastDialStargate(address)
+                dialermode(address)
             else
                 print("Sorry, this feature is only available for Milky Way Stargates.")
             end
@@ -41,31 +55,6 @@ local function dialermenu()
         else
             print("Invalid option, please try again.")
         end
-    end
-end
-
-local function fastDialStargate(address)
-    local sg = peripheral.find("advanced_crystal_interface")
-    print("Dialing Stargate...")
-
-    for _, symbol in ipairs(address) do
-        sg.engageSymbol(symbol)
-        sleep(0.5)
-    end
-
-    -- Wait for wormhole to open with a timeout of 8 seconds using a counter
-    local counter = 0
-    local timeoutLimit = 8  -- 8 seconds timeout limit
-    
-    while not sg.isWormholeOpen() and counter < timeoutLimit do
-        sleep(0.5)
-        counter = counter + 0.5  -- increment by sleep time (0.5 seconds)
-    end
-
-    if sg.isWormholeOpen() then
-        print("Stargate connected!")
-    else
-        print("Failed to connect to Stargate: Timeout.")
     end
 end
 
