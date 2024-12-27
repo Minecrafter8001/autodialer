@@ -1,8 +1,8 @@
 -- main.lua
 
-local dialing = require("./dialing")
-local addressManager = require("./addressManager")
-local config = require("./config")
+local dialing = require("autoDialer.dialing")
+local addressManager = require("autoDialer.addressManager")
+local config = require("autoDialer.config")
 
 local function mainMenu()
     while true do
