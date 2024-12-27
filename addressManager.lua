@@ -30,7 +30,8 @@ local function saveAddress(address, alias)
 end
 
 -- List saved addresses
-local function listSavedAddresses()
+local function listSavedAddresses(enable)
+    
     if next(addresses) == nil then  -- Using next() to check for empty tables
         print("No addresses saved.")
         
@@ -43,8 +44,10 @@ local function listSavedAddresses()
         end
     end
     while true do
-    print("Press any button to return...")
-    os.pullEvent("key")
+        if enable and enable == true then
+            print("Press any button to return...")
+            os.pullEvent("key")
+        end
     break
     end
 end

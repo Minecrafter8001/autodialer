@@ -100,7 +100,7 @@ local function dialermenu()
 
         local choice = read()
         if choice == "1" then
-            addressManager.listSavedAddresses()
+            addressManager.listSavedAddresses(false)
             print("Enter the alias of the address you want to dial:")
             local alias = read()
             local address = addressManager.getAddress(alias)

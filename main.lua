@@ -36,7 +36,7 @@ local function mainMenu()
             local alias = read()
             addressManager.saveAddress(address, alias)
         elseif choice == "3" then
-            addressManager.listSavedAddresses()
+            addressManager.listSavedAddresses(true)
         elseif choice == "4" then
             print("Enter the alias of the address you want to rename:")
             local oldAlias = read()
