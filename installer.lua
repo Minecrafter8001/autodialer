@@ -91,7 +91,7 @@ local function install()
     dialerFile.write([[
         -- dialer.lua
         local main = require("autoDialer.main")
-        main()
+        main.mainMenu()
     ]])
     dialerFile.close()
     print("dialer.lua created successfully!")
