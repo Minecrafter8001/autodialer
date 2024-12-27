@@ -58,6 +58,7 @@ if __name__ == "__main__":
     if not api_key:
         print("Error: PASTEBIN_API_KEY is not set.")
         sys.exit(1)
+    print(api_key)
     file_to_upload = sys.argv[1]
     readme_file = sys.argv[2]
 
