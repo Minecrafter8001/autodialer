@@ -27,7 +27,7 @@ jobs:
 
       - name: Upload or update Pastebin and update README
         env:
-          PASTEBIN_API_KEY: ${{ secrets.PASTEBIN_API_KEY }}
+          PASTEBIN_API_KEY: $PASTEBIN_API_KEY
         run: |
           python actions/pastebin-sync.py installer.lua README.md
           
