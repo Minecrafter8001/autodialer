@@ -100,6 +100,7 @@ local function dialermenu()
 
         local choice = read()
         if choice == "1" then
+            addressManager.listAddresses()
             print("Enter the alias of the address you want to dial:")
             local alias = read()
             local address = addressManager.getAddress(alias)
@@ -137,8 +138,9 @@ local function dialermenu()
                 print("Stargate is not connected.")
             end
             while true do
-                os.pullEvent("key")
                 print("Press any key to continue...")
+                os.pullEvent("key")
+                break
             end
         elseif choice == "4" then
             print("Exiting...")

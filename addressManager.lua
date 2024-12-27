@@ -33,16 +33,20 @@ end
 local function listSavedAddresses()
     if next(addresses) == nil then  -- Using next() to check for empty tables
         print("No addresses saved.")
-        return
-    end
-    print("Saved addresses:")
-    for alias, address in pairs(addresses) do
-        print("- " .. alias)
-        print("--> " .. table.concat(address, "-"))
+        
+    else
+        print("Saved addresses:")
+        for alias, address in pairs(addresses) do
+            print("- " .. alias)
+            print("--> " .. table.concat(address, "-"))
 
+        end
     end
+    while true do
     print("Press any button to return...")
     os.pullEvent("key")
+    break
+    end
 end
 
 -- Rename an address alias
