@@ -1,7 +1,7 @@
 -- config.lua
 
 local config = {
-    isMilkyWay = false -- Default to false
+    isMilkyWay = false, -- Default to false
     addressDir = "./addresses.txt"
 }
 

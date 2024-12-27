@@ -8,9 +8,7 @@ local function mainMenu()
     while true do
         print("\nStargate Dialer Menu:")
         print("1. Dial Stargate")
-        if config.isMilkyWay then
-            print("2. Dial Stargate (Slow Dial)")
-        end
+        print("2. Dial Stargate (Slow Dial)")
         print("3. Save an address")
         print("4. List saved addresses")
         print("5. Rename an address alias")
@@ -33,7 +31,8 @@ local function mainMenu()
                 table.insert(address, 0)
             end
             dialing.fastDialStargate(address)
-        elseif choice == "2" and config.isMilkyWay then
+        elseif choice == "2" then
+            if config.isMilkyWay then
             print("Enter Stargate address to dial (separated by dashes, e.g., 1-2-3):")
             local input = read()
             local address = {}
@@ -48,6 +47,9 @@ local function mainMenu()
                 table.insert(address, 0)
             end
             dialing.slowDialStargate(address)
+            else
+                print("Slow dialing only avaliable on milky way stargates")
+            end
         elseif choice == "3" then
             print("Enter a new Stargate address to save (separated by dashes, e.g., 1-2-3):")
             local input = read()
