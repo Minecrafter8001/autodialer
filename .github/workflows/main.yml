@@ -1,0 +1,40 @@
+name: Update Existing Paste or Create a New One
+
+on:
+  push:
+    paths:
+      - "installer.lua"
+
+jobs:
+  upload-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Upload or update Pastebin and update README
+        env:
+          PASTEBIN_API_KEY: ${{ secrets.PASTEBIN_API_KEY }}
+        run: |
+          python upload_or_update_pastebin.py installer.lua README.md
+          
+      - name: Commit changes
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          if git diff --quiet; then
+            echo "No changes to commit"
+          else
+            git add README.md
+            git commit -m "Update README with Pastebin ID"
+            git push
+          fi
