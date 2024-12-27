@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
+      - name: Debug directory structure
+        run: ls -R
+
       - name: Upload or update Pastebin and update README
         env:
           PASTEBIN_API_KEY: ${{ secrets.PASTEBIN_API_KEY }}
