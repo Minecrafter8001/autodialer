@@ -2,6 +2,7 @@
 
 local config = {
     isMilkyWay = false -- Default to false
+    addressDir = "./addresses.txt"
 }
 
 -- Get the Stargate peripheral
@@ -17,6 +18,5 @@ if sg then
         config.isMilkyWay = true
     end
 end
-addressDir = "./addresses.txt"
 
 return config
