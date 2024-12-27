@@ -4,8 +4,8 @@ local addresses = {}
 
 -- Load addresses from file
 local function loadAddresses()
-    if fs.exists("addresses.txt") then
-        local file = fs.open("addresses.txt", "r")
+    if fs.exists(config.addressDir) then
+        local file = fs.open(config.addressDir, "r")  -- Fixed the quotation marks
         local content = file.readAll()
         file.close()
 
@@ -17,7 +17,7 @@ end
 
 -- Save addresses to file
 local function saveAddresses()
-    local file = fs.open("addresses.txt", "w")
+    local file = fs.open(config.addressDir, "w")  -- Fixed the quotation marks
     file.write(textutils.serialize(addresses))
     file.close()
 end
@@ -31,7 +31,7 @@ end
 
 -- List saved addresses
 local function listSavedAddresses()
-    if #addresses == 0 then
+    if next(addresses) == nil then  -- Using next() to check for empty tables
         print("No addresses saved.")
         return
     end
