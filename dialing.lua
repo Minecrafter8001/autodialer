@@ -1,10 +1,11 @@
 local addressManager = require("addressManager")
 local config = require("config")
+local sg = peripheral.find("advanced_crystal_interface")
 
 -- Fast dialing for Stargate
 local function fastDialStargate(address)
-    local sg = peripheral.find("advanced_crystal_interface")
-    print("Dialing Stargate...")
+    print("Fast dialing Stargate:")
+    print(" " .. table.concat(address, "-"))
 
     for _, symbol in ipairs(address) do
         sg.engageSymbol(symbol)
@@ -20,8 +21,8 @@ end
 
 -- Slow dialing for Stargate with optimized rotation direction
 local function slowDialStargate(address)
-    local sg = peripheral.find("advanced_crystal_interface")
-    print("Slow dialing Stargate...")
+    print("Slow dialing Stargate:")
+    print(" " .. table.concat(address, "-"))
 
     for i, symbol in ipairs(address) do
         -- Get the current symbol and calculate the fastest direction (clockwise or counter-clockwise)
@@ -132,7 +133,7 @@ local function dialermenu()
                 print(" " .. table.concat(address, "-"))
             else
                 print("Stargate is not connected.")
-            end    
+            end
             while true do
                 os.pullEvent("key")
                 print("Press any key to continue...")
