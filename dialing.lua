@@ -71,6 +71,7 @@ local function slowDialStargate(address)
 end
 
 -- Prompt user for dialer mode (Fast or Slow)
+local function dialermode(address)
     while true do
         print("Choose dialing mode: (1) Fast, (2) Slow")
         local mode = read()
