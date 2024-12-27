@@ -1,4 +1,5 @@
 import requests
+import os
 
 def delete_paste(api_key, paste_id):
     """Deletes an existing paste."""
@@ -53,7 +54,10 @@ if __name__ == "__main__":
         print("Usage: python pastebin-sync.py <file_to_upload> <readme_file>")
         sys.exit(1)
 
-    api_key = "your_api_key_here"  # Replace with your Pastebin API key
+    api_key = os.getenv("PASTEBIN_API_KEY")  # Get the API key from the environment variable
+    if not api_key:
+        print("Error: PASTEBIN_API_KEY is not set.")
+        sys.exit(1)
     file_to_upload = sys.argv[1]
     readme_file = sys.argv[2]
 
