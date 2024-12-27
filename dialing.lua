@@ -1,5 +1,5 @@
-local addressManager = require("autoDialer.addressManager")
-local config = require("autoDialer.config")
+local addressManager = require("addressManager")
+local config = require("config")
 
 -- Fast dialing for Stargate
 local function fastDialStargate(address)
