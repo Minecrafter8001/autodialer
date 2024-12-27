@@ -131,8 +131,12 @@ local function dialermenu()
                 print("Disconnected Stargate from:")
                 print(" " .. table.concat(address, "-"))
             else
-                
-                
+                print("Stargate is not connected.")
+            end    
+            while true do
+                os.pullEvent("key")
+                print("Press any key to continue...")
+            end
         elseif choice == "4" then
             print("Exiting...")
             break
