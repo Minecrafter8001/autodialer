@@ -36,8 +36,10 @@ local function listSavedAddresses()
         return
     end
     print("Saved addresses:")
-    for alias, _ in pairs(addresses) do
+    for alias, address in pairs(addresses) do
         print("- " .. alias)
+        print("  - " .. table.concat(address, "-"))
+
     end
     print("Press any button to return...")
     os.pullEvent("key")
