@@ -39,6 +39,8 @@ local function listSavedAddresses()
     for alias, _ in pairs(addresses) do
         print("- " .. alias)
     end
+    print("Press any button to return...")
+    os.pullEvent("key")
 end
 
 -- Rename an address alias
