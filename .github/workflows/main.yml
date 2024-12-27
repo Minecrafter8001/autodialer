@@ -25,7 +25,7 @@ jobs:
         env:
           PASTEBIN_API_KEY: ${{ secrets.PASTEBIN_API_KEY }}
         run: |
-          python actions/upload_or_update_pastebin.py installer.lua README.md
+          python /actions/upload_or_update_pastebin.py installer.lua README.md
           
       - name: Commit changes
         run: |
