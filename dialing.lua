@@ -100,7 +100,7 @@ local function dialermenu()
 
         local choice = read()
         if choice == "1" then
-            addressManager.listAddresses()
+            addressManager.listSavedAddresses()
             print("Enter the alias of the address you want to dial:")
             local alias = read()
             local address = addressManager.getAddress(alias)
@@ -110,7 +110,6 @@ local function dialermenu()
                 print("Alias not found.")
             end
         elseif choice == "2" then
-            if config.isMilkyWay then
                 print("Enter Stargate address to dial (separated by dashes, e.g., 1-2-3):")
                 local input = read()
                 local address = {}
@@ -125,9 +124,6 @@ local function dialermenu()
                     table.insert(address, 0)
                 end
                 dialermode(address)
-            else
-                print("Sorry, this feature is only available for Milky Way Stargates.")
-            end
         elseif choice == "3" then
             if sg.isWormholeOpen() then
                 address = sg.getConnectedAddress()
