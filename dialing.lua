@@ -46,12 +46,13 @@ local function slowDialStargate(address)
                 sleep(0.1)
             end
         end
-
+        sleep(0.5)
         sg.openChevron()
-        sleep(0.1)
+        sleep(0.5)
         sg.encodeChevron()
-        sleep(0.1)
+        sleep(0.5)
         sg.closeChevron()
+        sleep(0.5)
     end
 
     -- Wait for wormhole to open with a timeout of 8 seconds using a counter
