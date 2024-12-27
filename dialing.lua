@@ -1,5 +1,6 @@
 -- dialing.lua
-local addressManager = require("addressManager")
+local addressManager = require("autoDialer.addressManager")
+local config = require("autoDialer.config")
 
 local function dialermenu()
     while true do
@@ -13,16 +14,26 @@ local function dialermenu()
         if choice == "1" then
             print("Enter the alias of the address you want to dial:")
             local alias = read()
-            addressManager.getAdress(alias)
+            local address = addressManager.getAddress(alias)
+            fastDialStargate(address)
         elseif choice == "2" then
-            print("Enter Stargate address to dial (separated by dashes, e.g., 1-2-3):")
-            local input = read()
-            local address = {}
-            for num in string.gmatch(input, "%d+") do
-                local symbol = tonumber(num)
-                if symbol < 0 or symbol > 38 then
-                    
+            if config.isMilkyWay then
+                print("Enter Stargate address to dial (separated by dashes, e.g., 1-2-3):")
+                local input = read()
+                local address = {}
+                for num in string.gmatch(input, "%d+") do
+                    local symbol = tonumber(num)
+                    if symbol < 0 or symbol > 38 then
+                        error("Invalid symbol: " .. symbol)
+                    end
+                    table.insert(address, symbol)
                 end
+                while #address < 9 do
+                    table.insert(address, 0)
+                end
+                fastDialStargate(address)
+            else
+                print("Sorry, this feature is only available for Milky Way Stargates.")
             end
         elseif choice == "3" then
             print("Exiting...")
