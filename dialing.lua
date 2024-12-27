@@ -46,7 +46,9 @@ local function slowDialStargate(address)
         end
 
         sg.openChevron()
+        sleep(0.1)
         sg.encodeChevron()
+        sleep(0.1)
         sg.closeChevron()
     end
 
