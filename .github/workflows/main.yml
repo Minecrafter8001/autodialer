@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - "installer.lua"
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   upload-and-update:
@@ -22,15 +22,12 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Debug directory structure
-        run: ls -R
-
       - name: Upload or update Pastebin and update README
         env:
-          PASTEBIN_API_KEY: $PASTEBIN_API_KEY
+          PASTEBIN_API_KEY: ${{ secrets.PASTEBIN_API_KEY }}  # Ensure secret is passed as an environment variable
         run: |
           python actions/pastebin-sync.py installer.lua README.md
-          
+
       - name: Commit changes
         run: |
           git config user.name "GitHub Actions"

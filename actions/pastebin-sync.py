@@ -1,5 +1,5 @@
-import requests
 import os
+import requests
 
 def delete_paste(api_key, paste_id):
     """Deletes an existing paste."""
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     if not api_key:
         print("Error: PASTEBIN_API_KEY is not set.")
         sys.exit(1)
-    print(api_key)
+    print(f"Using PASTEBIN_API_KEY: {api_key}")
     file_to_upload = sys.argv[1]
     readme_file = sys.argv[2]
 
