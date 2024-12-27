@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "installer.lua"
+  workflow_dispatch:
 
 jobs:
   upload-and-update:
