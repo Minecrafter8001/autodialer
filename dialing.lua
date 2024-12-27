@@ -1,4 +1,37 @@
 -- dialing.lua
+local addressManager = require("addressManager")
+
+local function dialermenu()
+    while true do
+        term.clear()
+        print("\nStargate Dialer Menu:")
+        print("1. Dial Saved Address")
+        print("2. Dial Address")
+        print("3. Exit")
+
+        local choice = read()
+        if choice == "1" then
+            print("Enter the alias of the address you want to dial:")
+            local alias = read()
+            addressManager.getAdress(alias)
+        elseif choice == "2" then
+            print("Enter Stargate address to dial (separated by dashes, e.g., 1-2-3):")
+            local input = read()
+            local address = {}
+            for num in string.gmatch(input, "%d+") do
+                local symbol = tonumber(num)
+                if symbol < 0 or symbol > 38 then
+                    
+                end
+            end
+        elseif choice == "3" then
+            print("Exiting...")
+            break
+        else
+            print("Invalid option, please try again.")
+        end
+    end
+end
 
 local function fastDialStargate(address)
     local sg = peripheral.find("advanced_crystal_interface")
@@ -74,5 +107,7 @@ end
 
 return {
     fastDialStargate = fastDialStargate,
-    slowDialStargate = slowDialStargate
+    slowDialStargate = slowDialStargate,
+    dialermenu = dialermenu
 }
+

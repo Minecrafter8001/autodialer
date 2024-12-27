@@ -53,11 +53,18 @@ local function renameAddress(oldAlias, newAlias)
     end
 end
 
+-- Get address by alias
+local function getAddress(alias)
+    return addresses[alias]
+end
+
 -- Load addresses at start
 loadAddresses()
 
 return {
     saveAddress = saveAddress,
     listSavedAddresses = listSavedAddresses,
-    renameAddress = renameAddress
+    renameAddress = renameAddress,
+    getAddress = getAddress
 }
+
