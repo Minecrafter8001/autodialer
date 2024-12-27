@@ -17,5 +17,6 @@ if sg then
         config.isMilkyWay = true
     end
 end
+addressDir = "./addresses.txt"
 
 return config
