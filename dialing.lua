@@ -92,7 +92,8 @@ local function dialermenu()
         print("\nStargate Dialer Menu:")
         print("1. Dial Saved Address")
         print("2. Dial Address")
-        print("3. Exit")
+        print("3. Close Connection")
+        print("4. Exit")
 
         local choice = read()
         if choice == "1" then
@@ -124,6 +125,15 @@ local function dialermenu()
                 print("Sorry, this feature is only available for Milky Way Stargates.")
             end
         elseif choice == "3" then
+            if sg.isWormholeOpen() then
+                address = sg.getConnectedAddress()
+                sg.disconnectStargate()
+                print("Disconnected Stargate from:")
+                print(" " .. table.concat(address, "-"))
+            else
+                
+                
+        elseif choice == "4" then
             print("Exiting...")
             break
         else
