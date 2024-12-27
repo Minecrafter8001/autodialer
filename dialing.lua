@@ -1,9 +1,9 @@
 local addressManager = require("addressManager")
 local config = require("config")
-local sg = peripheral.find("advanced_crystal_interface")
 
 -- Fast dialing for Stargate
 local function fastDialStargate(address)
+    local sg = peripheral.find(config.interface)
     print("Fast dialing Stargate:")
     print(" " .. table.concat(address, "-"))
 
@@ -21,6 +21,7 @@ end
 
 -- Slow dialing for Stargate with optimized rotation direction
 local function slowDialStargate(address)
+    local sg = peripheral.find(config.interface)
     print("Slow dialing Stargate:")
     print(" " .. table.concat(address, "-"))
 
@@ -70,7 +71,6 @@ local function slowDialStargate(address)
 end
 
 -- Prompt user for dialer mode (Fast or Slow)
-local function dialermode(address)
     while true do
         print("Choose dialing mode: (1) Fast, (2) Slow")
         local mode = read()
@@ -88,6 +88,7 @@ end
 
 -- Main menu for dialing
 local function dialermenu()
+    local sg = peripheral.find(config.interface)
     while true do
         term.clear()
         print("\nStargate Dialer Menu:")

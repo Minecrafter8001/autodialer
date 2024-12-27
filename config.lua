@@ -2,11 +2,12 @@
 
 local config = {
     isMilkyWay = false, -- Default to false
-    addressDir = "./addresses.txt"
+    addressDir = "./addresses.txt",
+    interface = "advanced_crystal_interface"
 }
 
 -- Get the Stargate peripheral
-local sg = peripheral.find("advanced_crystal_interface")
+local sg = peripheral.find(config.interface)
 
 -- Check if the Stargate peripheral is present
 if sg then
