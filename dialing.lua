@@ -9,11 +9,20 @@ local function fastDialStargate(address)
         sleep(0.5)
     end
 
-    while not sg.isWormholeOpen() do
+    -- Wait for wormhole to open with a timeout of 8 seconds using a counter
+    local counter = 0
+    local timeoutLimit = 8  -- 8 seconds timeout limit
+    
+    while not sg.isWormholeOpen() and counter < timeoutLimit do
         sleep(0.5)
+        counter = counter + 0.5  -- increment by sleep time (0.5 seconds)
     end
 
-    print("Stargate connected!")
+    if sg.isWormholeOpen() then
+        print("Stargate connected!")
+    else
+        print("Failed to connect to Stargate: Timeout.")
+    end
 end
 
 local function slowDialStargate(address)
@@ -21,22 +30,46 @@ local function slowDialStargate(address)
     print("Slow dialing Stargate...")
 
     for i, symbol in ipairs(address) do
+        -- Get the current symbol and calculate the fastest direction (clockwise or counter-clockwise)
+        local currentSymbol = sg.getCurrentSymbol()
+        local clockwiseDist = (symbol - currentSymbol) % 8
+        local counterClockwiseDist = (currentSymbol - symbol) % 8
+
+        -- Determine the fastest direction
+        local rotateDirection = clockwiseDist <= counterClockwiseDist and "clockwise" or "counterClockwise"
+
         -- Rotate to the correct symbol
-        sg.rotateClockwise(symbol)
-        while not sg.isCurrentSymbol(symbol) do
-            sleep(0.5)
+        if rotateDirection == "clockwise" then
+            sg.rotateClockwise(symbol)
+            while not sg.isCurrentSymbol(symbol) do
+                sleep(0.1)
+            end
+        else
+            sg.rotateAntiClockwise(symbol)
+            while not sg.isCurrentSymbol(symbol) do
+                sleep(0.1)
+            end
         end
+
         sg.openChevron()
         sg.encodeChevron()
-        sleep(0.5)
         sg.closeChevron()
     end
 
-    while not sg.isWormholeOpen() do
+    -- Wait for wormhole to open with a timeout of 8 seconds using a counter
+    local counter = 0
+    local timeoutLimit = 8  -- 8 seconds timeout limit
+    
+    while not sg.isWormholeOpen() and counter < timeoutLimit do
         sleep(0.5)
+        counter = counter + 0.5  -- increment by sleep time (0.5 seconds)
     end
 
-    print("Stargate connected!")
+    if sg.isWormholeOpen() then
+        print("Stargate connected!")
+    else
+        print("Failed to connect to Stargate: Timeout.")
+    end
 end
 
 return {
