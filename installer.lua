@@ -1,122 +1,164 @@
 -- installer.lua
+-- Automated installer for AutoDialer CC: Tweaked program
 
--- Set your GitHub username and repository name here
-local username = "Minecrafter8001"   -- Replace with your GitHub username
-local repoName = "autodialer"       -- Replace with your GitHub repository name
+-- Configuration
+local GITHUB_USERNAME = "Minecrafter8001"  -- Your GitHub username
+local REPOSITORY_NAME = "autodialer"      -- Your repository name
+local BRANCH = "main"                     -- Repository branch
+local TARGET_DIR = "autoDialer"           -- Installation directory
 
--- List of filenames to download (relative to the repo root)
-local files = {
+-- Core files needed for the program
+local REQUIRED_FILES = {
     "main.lua",
     "config.lua",
     "addressManager.lua",
     "dialing.lua"
 }
 
-
--- Function to construct the raw GitHub URL for each file
+-- Utility functions
 local function constructUrl(filename)
-    return "https://raw.githubusercontent.com/" .. username .. "/" .. repoName .. "/main/" .. filename
+    return string.format(
+        "https://raw.githubusercontent.com/%s/%s/%s/%s",
+        GITHUB_USERNAME, REPOSITORY_NAME, BRANCH, filename
+    )
 end
 
-
--- Function to download and save a file
-local function downloadFile(url, filename)
-    print("Downloading " .. filename .. "...")
-    local response = http.get(url)
-    if response then
-        local content = response.readAll()
-        local file = fs.open(filename, "w")
-        file.write(content)
-        file.close()
-        print(filename .. " downloaded successfully!")
-    else
-        print("Failed to download " .. filename)
-    end
+local function fileExists(filename)
+    return fs.exists(filename)
 end
 
--- Function to delete a file if it exists
-local function deleteFileIfExists(filename)
-    if fs.exists(filename) then
-        print("Deleting existing file: " .. filename)
+local function deleteFile(filename)
+    if fileExists(filename) then
+        print("Removing existing: " .. filename)
         fs.delete(filename)
     end
 end
 
--- Create the autoDialer folder if it doesn't exist
-local function createAutoDialerFolder()
-    if not fs.exists("autoDialer") then
-        fs.makeDir("autoDialer")
+local function createDirectory()
+    if not fileExists(TARGET_DIR) then
+        print("Creating directory: " .. TARGET_DIR)
+        fs.makeDir(TARGET_DIR)
     end
 end
 
--- Function to prompt user for yes/no input
-local function getYesNoInput(prompt)
-    while true do
-        print(prompt .. " (y/n)")
-        local input = read()
-        if input == "y" or input == "Y" then
-            return true
-        elseif input == "n" or input == "N" then
-            return false
-        else
-            print("Invalid input. Please enter 'y' or 'n'.")
-        end
+-- File management functions
+local function downloadFile(url, filePath)
+    print("Downloading: " .. filePath)
+    local response = http.get(url)
+    
+    if not response then
+        print("Failed to download: " .. filePath)
+        return false
     end
+    
+    local content = response.readAll()
+    response.close()
+    
+    local fileHandle = fs.open(filePath, "w")
+    fileHandle.write(content)
+    fileHandle.close()
+    
+    print("Successfully downloaded: " .. filePath)
+    return true
 end
 
--- Main installation function
-local function install()
-    print("Starting installer...")
-
-    -- Create the autoDialer directory
-    createAutoDialerFolder()
-
-    -- Delete existing files if they exist before downloading
-    deleteFileIfExists("dialer.lua")
-    deleteFileIfExists("startup")
-
-    -- Delete all files in the autoDialer folder if they exist
-    for _, filename in ipairs(files) do
-        deleteFileIfExists("autoDialer/" .. filename)
-    end
-
-    -- Download each file and save it in the appropriate directory
-    for _, filename in ipairs(files) do
-        local url = constructUrl(filename)
-        downloadFile(url, "autoDialer/" .. filename)
-    end
-
-    -- Create a dialer.lua file that simply calls main.lua
-    local dialerFile = fs.open("dialer.lua", "w")
-    dialerFile.write([[
-        -- dialer.lua
+local function createLauncher()
+    local launcherPath = "dialer.lua"
+    print("Creating launcher: " .. launcherPath)
+    
+    local launcher = fs.open(launcherPath, "w")
+    launcher.write([[
+        -- Auto-generated launcher
         local main = require("autoDialer.main")
         main.mainMenu()
     ]])
-    dialerFile.close()
-    print("dialer.lua created successfully!")
-
-    -- Prompt user for adding to startup
-    local addToStartup = getYesNoInput("Would you like to add the dialer to startup?")
-
-    if addToStartup then
-        local startupFile = fs.open("startup", "w")
-        startupFile.write([[
-            -- startup
-            shell.run("dialer.lua")
-        ]])
-        startupFile.close()
-        print("Dialer added to startup.")
-    else
-        print("Dialer was not added to startup.")
-    end
-
-    print("Installation complete!")
+    launcher.close()
 end
 
--- Check for internet access
+-- Startup management
+local function hasStartupEntry()
+    if not fileExists("startup") then return false end
+    
+    local startupFile = fs.open("startup", "r")
+    local content = startupFile.readAll()
+    startupFile.close()
+    
+    return content:find("dialer%.lua") ~= nil
+end
+
+local function addToStartup()
+    if hasStartupEntry() then
+        print("Startup entry already exists")
+        return
+    end
+    
+    print("Adding to startup...")
+    local startupFile = fs.open("startup", "a")
+    startupFile.write("\nshell.run(\"dialer.lua\")")
+    startupFile.close()
+end
+
+-- Main installation process
+local function install()
+    print("\n=== AutoDialer Installation ===")
+    
+    -- Set up directory structure
+    createDirectory()
+    deleteFile("dialer.lua")
+    
+    -- Download required files
+    local allSuccess = true
+    for _, filename in ipairs(REQUIRED_FILES) do
+        local url = constructUrl(filename)
+        local filePath = fs.combine(TARGET_DIR, filename)
+        deleteFile(filePath)
+        
+        if not downloadFile(url, filePath) then
+            allSuccess = false
+        end
+    end
+    
+    if not allSuccess then
+        print("\nError: Some files failed to download!")
+        print("Installation aborted.")
+        return
+    end
+    
+    -- Create launcher
+    createLauncher()
+    
+    -- Startup configuration
+    print("\nStartup configuration:")
+    if hasStartupEntry() then
+        print("Dialer is already configured to run at startup")
+    else
+        local add = getYesNoInput("Run dialer automatically on startup?")
+        if add then
+            addToStartup()
+            print("Added to startup sequence")
+        else
+            print("Skipping startup configuration")
+        end
+    end
+    
+    print("\nInstallation completed successfully!")
+    print("Run 'dialer.lua' to start the program.")
+end
+
+-- User prompt function
+function getYesNoInput(prompt)
+    while true do
+        write(prompt .. " (y/n): ")
+        local input = read():lower()
+        if input == "y" then return true end
+        if input == "n" then return false end
+        print("Invalid input, please enter y or n")
+    end
+end
+
+-- Start installation if internet is available
 if http then
     install()
 else
-    print("Error: No internet access detected.")
+    print("Error: Internet access required for installation")
 end
